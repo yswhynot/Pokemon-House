@@ -2,47 +2,15 @@
 <html>
 	<head>
 	<?php
-		date_default_timezone_set("Asia/Hong_Kong"); 
-		$time = time();
 		session_start();
 		$UserID = $_SESSION['userid'];
-		if (!isset($_SESSION['oldTime'])){
-			$_SESSION['oldTime'] = $time;
-		}
 		$connectionstring =mysql_connect("localhost","root");
 		if ($connectionstring == 0) die("cannot connect to the db");
 		$db = mysql_select_db("4432project", $connectionstring) or die("cannot open the selected db");
 	?>
-		<title>Pokemon House</title>
+		<title>Food Shop</title>
 		<link href="./css/style.css" rel="stylesheet" type="text/css" />
 		<script type="text/javascript" src="./js/jquery.min.js"></script>
-     	<script type="text/javascript">
-		var xmlHttp;
-		function check() {
-			try {
-				xmlHttp = new XMLHttpRequest();
-			} catch (e) {
-				try {
-					xmlHttp = new ActiveXObject("Msxml2.XMLHTTP");
-				} catch (e) {
-					try {
-						xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
-					} catch (e) {
-						alert("Error!");
-						return;
-					}
-				}
-			}
-			var url = "check.php";
-			xmlHttp.onreadystatechange=function()  {
-				if (xmlHttp.readyState == 4 && xmlHttp.status == 200)  {
-					document.getElementById("message").innerHTML = xmlHttp.responseText;
-				}
-			}
-			xmlHttp.open("GET", url, true);
-			xmlHttp.send(null);
-		}
-		</script>
 <!-- start menu -->     
 <link href="./css/megamenu.css" rel="stylesheet" type="text/css" media="all" />
 <script type="text/javascript" src="./js/megamenu.js"></script>
@@ -53,14 +21,12 @@
   <div class="header-top">
   <div class="wrap"> 
   	<?php
-  		$query = "SELECT USERNAME FROM USER WHERE USERID=" .$UserID;
+  		$query = "SELECT USERNAME FROM USER WHERE USERID=" . $UserID;
   		$result = mysql_query($query, $connectionstring) or die("No information");
   		$row = mysql_fetch_array($result, MYSQL_ASSOC);
-  		print('<div align="center">Welcome, ' .$row['USERNAME']. '.</div>');
-  		$query = "SELECT T.USERNAME, PID, T.PDATAID, POKEMONDATA.NAME, AGE, GENDER, HUNGRYLEVEL
-					FROM ((SELECT USER.USERID, USERNAME, PID, PDATAID, AGE, GENDER, HUNGRYLEVEL
-							FROM USER JOIN POKEMON ON USER.UserID=POKEMON.UserID
-							WHERE USER.USERID=".$UserID.") T) JOIN pokemondata ON T.PDATAID=POKEMONDATA.PDATAID;";
+  		print('<div align="center">Welcome ' .$row['USERNAME']. ' to our Food Shop!<br /><br />');
+  		print('Click on the Food to view detail information.</div>');
+  		$query = "SELECT FoodID, Name, Price, HungryPlus FROM FOOD";
 		$result = mysql_query($query, $connectionstring) or die("No information");
   	?>
 	    <div class="cssmenu">
@@ -114,19 +80,18 @@
 						while(($j < 3) && (($i*3+$j) < $num_rows)) {
 							$row = mysql_fetch_array($result, MYSQL_ASSOC);
 							print("<div class=\"col_1_of_3 span_1_of_3\">");
-							$PID = $row['PID'];
-							print("<a onclick=\"javascript:void window.open('pokemondata.php?PID=$PID',
+							$FoodID = $row['FoodID'];
+							print("<a onclick=\"javascript:void window.open('foodDetail.php?FoodID=$FoodID',
 								'Pokemon Data','width=400,height=700,scrollbars=1,resizable=1');return false;\">");
 				     		print("<div class=\"view view-fifth\">");
 				  	  		print("<div class=\"top_box\">");
-				  	  		$name = $row['NAME'];
+				  	  		$name = $row['Name'];
 					  		print("<h3 class=\"m_1\">" . $name . "</h3>");
 				        	print("<div class=\"grid_img\">");
-							print("<div class=\"css3\"><img src=\"./Image/Pokemon/" . $name . ".png\" alt=\"\"/></div>");
+							print("<div class=\"css3\"><img src=\"./Image/Food/" . $name . ".png\" alt=\"\"/></div>");
 	                    	print("</div><div class=\"price\">");
-	                    	print("Age: " . $row['AGE'] . "<br />");
-	                    	print("Gender: " . $row['GENDER'] . "<br />");
-	                    	print("Hungry Level: " . $row['HUNGRYLEVEL'] . "<br />");
+	                    	print("Hungry level decrease: " . $row['HungryPlus'] . "<br />");
+	                    	print("Price: " . $row['Price'] . "<br />");
 	                    	print("</div></div></div>");
 			    	    	print("<div class=\"clear\"></div></a></div>");
 			    	    	$j++;

@@ -1,11 +1,14 @@
 <html>
 	<head>
+	<?php
+		$PID = $_GET['PID'];
+	?>
 		<link href="./css/style.css" rel="stylesheet" type="text/css" />
 		<link href="./css/form.css" rel="stylesheet" type="text/css" />
+		<title>Pokemon Data</title>
 	</head>
 	<body>
 	<?php
-		$PID = $_GET['PID'];
 		$connectionstring =mysql_connect("localhost","root");
 		if ($connectionstring == 0) die("cannot connect to the db");
 		$db = mysql_select_db("4432project", $connectionstring) or die("cannot open the selected db");
@@ -46,13 +49,24 @@
 						WHERE WorkStatusID=" . $WorkStatusID;
 			$result = mysql_query($query, $connectionstring) or die("No information");
 			$row3 = mysql_fetch_array($result, MYSQL_ASSOC);
-			print("Work Status: Have been " . $row3['Type'] . " since " . $row3['Time'] . "<br />");
+			$workTime = $row3['Time'];
+			date_default_timezone_set("Asia/Hong_Kong"); 
+			print("Work Status: Have been " . $row3['Type'] . " since " . date('Y-m-d, H:i:s', $workTime) . "<br />");
      	}
-     	print("</p></div>");
+     	print("</p></div><br />");
+     	print("<h4 class=\"m_9\">Choose what you want to do</h4>");
+     	print("<div class=\"btn_form\"><form>");
+     	print("<input type=\"button\" value=\"Feed\" onclick=\"javascript:void window.open
+     						('activity.php?PID=$PID&choice=feed','Feed Pokemon','width=450,height=150,scrollbars=1,resizable=1');return false;\"><br /><br />");
+     	if ($Marriage == 0) 
+     		print("<input type=\"button\" value=\"Getting marriaged\" onclick=\"javascript:void window.open
+     						('activity.php?PID=$PID&choice=marry','Feed Pokemon','width=450,height=150,scrollbars=1,resizable=1');return false;\"><br /><br />");
+     	if($WorkStatusID == 0)
+     		print("<input type=\"button\" value=\"Send to work\" onclick=\"javascript:void window.open
+     						('activity.php?PID=$PID&choice=work','Feed Pokemon','width=450,height=150,scrollbars=1,resizable=1');return false;\"></form></div>");
 		print("</div></div><div class=\"clear\"></div>");
 		mysql_free_result($result);
 		mysql_close($connectionstring);
 	?>
-
 	</body>
 </html>
